@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frozen Foods POS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2><i class="fas fa-snowflake"></i> Frozen Foods</h2>
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-item" onclick="showPage('dashboard')">
+          <i class="fas fa-chart-line"></i>
+          <span>Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="showPage('sales')">
+          <i class="fas fa-shopping-cart"></i>
+          <span>Point of Sale</span>
+        </div>
+        <div class="nav-item" onclick="showPage('sales-history')">
+          <i class="fas fa-history"></i>
+          <span>Sales History</span>
+        </div>
+        <div class="nav-item" onclick="showPage('customers')">
+          <i class="fas fa-users"></i>
+          <span>Customers</span>
+        </div>
+        <div class="nav-item" onclick="showPage('products')">
+          <i class="fas fa-box"></i>
+          <span>Products</span>
+        </div>
+        <div class="nav-item" onclick="showPage('inventory')">
+          <i class="fas fa-warehouse"></i>
+          <span>Inventory</span>
+        </div>
+        <div class="nav-item" onclick="showPage('receiving')">
+          <i class="fas fa-truck"></i>
+          <span>Receiving</span>
+        </div>
+        <div class="nav-item" onclick="showPage('vendors')">
+          <i class="fas fa-industry"></i>
+          <span>Vendors</span>
+        </div>
+        <div class="nav-item" onclick="showPage('reports')">
+          <i class="fas fa-file-alt"></i>
+          <span>Reports</span>
+        </div>
+        <div class="nav-item" onclick="showPage('employees')">
+          <i class="fas fa-user-tie"></i>
+          <span>Employees</span>
+        </div>
+        <div class="nav-item" onclick="showPage('expenses')">
+          <i class="fas fa-money-bill"></i>
+          <span>Expenses</span>
+        </div>
+        <div class="nav-item" onclick="showPage('settings')">
+          <i class="fas fa-cog"></i>
+          <span>Settings</span>
+        </div>
+        <div class="nav-item" onclick="logout()" style="margin-top: auto; color: #e74c3c;">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span id="userName">User</span>
+        </div>
+      </header>
+
+      <div class="page-container">
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page">
+          <h1>Dashboard</h1>
+          <div class="dashboard-grid">
+            <div class="card">
+              <h3>Today's Sales</h3>
+              <p class="amount" id="todaySales">₦0.00</p>
+            </div>
+            <div class="card">
+              <h3>Transactions</h3>
+              <p class="amount" id="todayTransactions">0</p>
+            </div>
+            <div class="card">
+              <h3>Gross Profit</h3>
+              <p class="amount" id="todayProfit">₦0.00</p>
+            </div>
+            <div class="card">
+              <h3>Low Stock</h3>
+              <p class="amount" id="lowStock">0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales (POS) Page -->
+        <div id="sales" class="page">
+          <h1>Point of Sale</h1>
+          <div class="pos-layout">
+            <div class="pos-left">
+              <div class="search-bar">
+                <input type="text" id="productSearch" placeholder="Search product by name, SKU, or barcode...">
+              </div>
+              <div class="products-grid" id="productsGrid"></div>
+            </div>
+            <div class="pos-right">
+              <div class="cart-header">
+                <h2>Cart</h2>
+                <button onclick="clearCart()" class="btn-small">Clear</button>
+              </div>
+              <div class="cart-items" id="cartItems"></div>
+              <div class="cart-totals">
+                <div class="total-row">
+                  <span>Subtotal:</span>
+                  <span id="subtotal">₦0.00</span>
+                </div>
+                <div class="total-row">
+                  <span>Discount:</span>
+                  <span id="discountAmount">₦0.00</span>
+                </div>
+                <div class="total-row total">
+                  <span>Total:</span>
+                  <span id="total">₦0.00</span>
+                </div>
+              </div>
+              <div class="pos-actions">
+                <button onclick="completeSale()" class="btn btn-primary">Complete Sale</button>
+                <button onclick="holdReceipt()" class="btn btn-secondary">Hold Receipt</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Other pages placeholder -->
+        <div id="sales-history" class="page">
+          <h1>Sales History</h1>
+          <table id="salesTable">
+            <thead>
+              <tr>
+                <th>Receipt #</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Total</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="customers" class="page">
+          <h1>Customers</h1>
+          <button class="btn btn-primary" onclick="showModal('customerModal')">Add Customer</button>
+          <table id="customersTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="products" class="page">
+          <h1>Products</h1>
+          <button class="btn btn-primary" onclick="showModal('productModal')">Add Product</button>
+          <table id="productsTable">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Name</th>
+                <th>Cost Price</th>
+                <th>Selling Price</th>
+                <th>Stock</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="inventory" class="page">
+          <h1>Inventory</h1>
+          <div class="inventory-filters">
+            <button class="filter-btn active" onclick="filterInventory('all')">All</button>
+            <button class="filter-btn" onclick="filterInventory('low')">Low Stock</button>
+            <button class="filter-btn" onclick="filterInventory('out')">Out of Stock</button>
+          </div>
+          <table id="inventoryTable">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Current Stock</th>
+                <th>Reorder Level</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="receiving" class="page">
+          <h1>Receiving Vouchers</h1>
+          <button class="btn btn-primary" onclick="showModal('receivingModal')">New Receiving Voucher</button>
+          <table id="receivingTable">
+            <thead>
+              <tr>
+                <th>Voucher #</th>
+                <th>Vendor</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="vendors" class="page">
+          <h1>Vendors</h1>
+          <button class="btn btn-primary" onclick="showModal('vendorModal')">Add Vendor</button>
+          <table id="vendorsTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="reports" class="page">
+          <h1>Reports</h1>
+          <div class="report-filters">
+            <select id="reportType" onchange="generateReport()">
+              <option value="daily-sales">Daily Sales</option>
+              <option value="weekly-sales">Weekly Sales</option>
+              <option value="monthly-sales">Monthly Sales</option>
+              <option value="sales-by-product">Sales by Product</option>
+              <option value="sales-by-employee">Sales by Employee</option>
+              <option value="inventory-valuation">Inventory Valuation</option>
+              <option value="low-stock">Low Stock</option>
+            </select>
+            <input type="date" id="reportDate">
+            <button onclick="generateReport()" class="btn btn-primary">Generate</button>
+          </div>
+          <div id="reportContent"></div>
+        </div>
+
+        <div id="employees" class="page">
+          <h1>Employees</h1>
+          <button class="btn btn-primary" onclick="showModal('employeeModal')">Add Employee</button>
+          <table id="employeesTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="expenses" class="page">
+          <h1>Expenses</h1>
+          <button class="btn btn-primary" onclick="showModal('expenseModal')">Add Expense</button>
+          <table id="expensesTable">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="settings" class="page">
+          <h1>Settings</h1>
+          <div class="settings-form">
+            <div class="form-group">
+              <label>Business Name</label>
+              <input type="text" id="businessName" placeholder="Frozen Foods Supermarket">
+            </div>
+            <div class="form-group">
+              <label>Currency</label>
+              <input type="text" id="currency" placeholder="NGN">
+            </div>
+            <div class="form-group">
+              <label>Currency Symbol</label>
+              <input type="text" id="currencySymbol" placeholder="₦">
+            </div>
+            <button onclick="saveSettings()" class="btn btn-primary">Save Settings</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modals -->
+  <div id="customerModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Customer</h2>
+        <button onclick="closeModal('customerModal')" class="close-btn">&times;</button>
+      </div>
+      <form onsubmit="saveCustomer(event)">
+        <input type="text" id="customerName" placeholder="Name" required>
+        <input type="tel" id="customerPhone" placeholder="Phone">
+        <input type="email" id="customerEmail" placeholder="Email">
+        <textarea id="customerAddress" placeholder="Address"></textarea>
+        <button type="submit" class="btn btn-primary">Save Customer</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Product</h2>
+        <button onclick="closeModal('productModal')" class="close-btn">&times;</button>
+      </div>
+      <form onsubmit="saveProduct(event)">
+        <input type="text" id="productSku" placeholder="SKU" required>
+        <input type="text" id="productName" placeholder="Product Name" required>
+        <input type="text" id="productBarcode" placeholder="Barcode">
+        <select id="productDept" required>
+          <option value="">Select Department</option>
+        </select>
+        <select id="productCategory" required>
+          <option value="">Select Category</option>
+        </select>
+        <input type="number" id="productCost" placeholder="Cost Price" step="0.01" required>
+        <input type="number" id="productPrice" placeholder="Selling Price" step="0.01" required>
+        <input type="number" id="productStock" placeholder="Opening Stock" step="0.01" required>
+        <button type="submit" class="btn btn-primary">Save Product</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="vendorModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Vendor</h2>
+        <button onclick="closeModal('vendorModal')" class="close-btn">&times;</button>
+      </div>
+      <form onsubmit="saveVendor(event)">
+        <input type="text" id="vendorName" placeholder="Vendor Name" required>
+        <input type="tel" id="vendorPhone" placeholder="Phone">
+        <input type="email" id="vendorEmail" placeholder="Email">
+        <textarea id="vendorAddress" placeholder="Address"></textarea>
+        <button type="submit" class="btn btn-primary">Save Vendor</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="employeeModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Employee</h2>
+        <button onclick="closeModal('employeeModal')" class="close-btn">&times;</button>
+      </div>
+      <form onsubmit="saveEmployee(event)">
+        <input type="text" id="employeeFirst" placeholder="First Name" required>
+        <input type="text" id="employeeLast" placeholder="Last Name" required>
+        <input type="email" id="employeeEmail" placeholder="Email" required>
+        <input type="tel" id="employeePhone" placeholder="Phone">
+        <select id="employeeRole" required>
+          <option value="">Select Role</option>
+          <option value="cashier">Cashier</option>
+          <option value="inventory_staff">Inventory Staff</option>
+          <option value="manager">Manager</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Save Employee</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="expenseModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Expense</h2>
+        <button onclick="closeModal('expenseModal')" class="close-btn">&times;</button>
+      </div>
+      <form onsubmit="saveExpense(event)">
+        <select id="expenseCategory" required>
+          <option value="">Select Category</option>
+          <option value="Transport">Transport</option>
+          <option value="Electricity">Electricity</option>
+          <option value="Fuel">Fuel</option>
+          <option value="Maintenance">Maintenance</option>
+          <option value="Packaging">Packaging</option>
+          <option value="Miscellaneous">Miscellaneous</option>
+        </select>
+        <input type="number" id="expenseAmount" placeholder="Amount" step="0.01" required>
+        <textarea id="expenseDesc" placeholder="Description"></textarea>
+        <button type="submit" class="btn btn-primary">Save Expense</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="receivingModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>New Receiving Voucher</h2>
+        <button onclick="closeModal('receivingModal')" class="close-btn">&times;</button>
+      </div>
+      <form onsubmit="saveReceiving(event)">
+        <select id="receivingVendor" required>
+          <option value="">Select Vendor</option>
+        </select>
+        <input type="text" id="receivingInvoice" placeholder="Invoice Number">
+        <div id="receivingItems"></div>
+        <button type="button" onclick="addReceivingItem()" class="btn btn-secondary">Add Item</button>
+        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Create Voucher</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
